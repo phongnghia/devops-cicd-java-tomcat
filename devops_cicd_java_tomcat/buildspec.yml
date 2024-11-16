@@ -1,0 +1,13 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+  build:
+    commands:
+      - echo Build started on `date`
+      - mvn package  # Assuming you are using Maven to build your WAR file
+artifacts:
+  files:
+    - target/*.war
