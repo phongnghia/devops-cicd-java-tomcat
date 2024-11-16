@@ -136,12 +136,18 @@ class DevopsCicdJavaTomcatStack(Stack):
             build_spec=codebuild.BuildSpec.from_object({
                 "version": "0.2",
                 "phases": {
-                    "build": {
+                    "install": {
                         "commands": [
                             "echo Installing dependencies",
                             "curl -O https://bootstrap.pypa.io/get-pip.py",
-                            "python3 tests/get-pip.py",
+                            "python3 get-pip.py",
                             "pip install requests"
+                        ]
+                    },
+                    "build": {
+                        "command": [
+                            "echo Running API tests",
+                            "python tests/test_api.py"
                         ]
                     }
                 },
