@@ -12,4 +12,4 @@ phases:
       - mvn clean package  # Assuming you are using Maven to build your WAR file
 artifacts:
   files:
-    - target/*.war
+    - java_tomcat_application/target/*.war
