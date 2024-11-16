@@ -1,0 +1,16 @@
+version: "0.2"
+
+phases:
+  install:
+    command:
+      - echo Installing dependencies
+      - curl -O https://bootstrap.pypa.io/get-pip.py
+      - python3 get-pip.py
+      - pip install requests
+  build:
+    command:
+      - echo Running API tests
+      - python test_api.py
+
+artifacts:
+  files: ["**/*"]

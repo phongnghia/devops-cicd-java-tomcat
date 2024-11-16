@@ -7,6 +7,6 @@ from devops_cicd_java_tomcat.devops_cicd_java_tomcat_stack import DevopsCicdJava
 
 
 app = App()
-DevopsCicdJavaTomcatStack(app, "DevopsCicdJavaTomcatStack")
+DevopsCicdJavaTomcatStack(app, "DevopsCicdJavaTomcatStack", env={"account": os.getenv('CDK_DEFAULT_ACCOUNT'), "region": os.getenv('CDK_DEFAULT_REGION')})
 
 app.synth()

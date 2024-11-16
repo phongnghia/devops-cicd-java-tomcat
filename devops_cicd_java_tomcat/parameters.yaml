@@ -12,3 +12,8 @@ prod:
   instance_type: t2.medium
   min_size: 3
   max_size: 6
+
+default:
+  instance_type: t2.micro
+  min_size: 1
+  max_size: 2
