@@ -31,10 +31,10 @@ class DevopsCicdJavaTomcatStack(Stack):
         self._add_build_stage(pipeline, source_output, build_output)
 
         # Test Stage
-        self._add_test_stage(pipeline, build_output, env_params)
+        self._add_test_stage(pipeline, source_output, env_params)
 
         # # Deploy Stage
-        # self._add_deploy_stage(pipeline)
+        self._add_deploy_stage(pipeline)
 
     def _load_parameters(self, environment: str) -> dict:
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -88,7 +88,7 @@ class DevopsCicdJavaTomcatStack(Stack):
             ]
         )
 
-    def _add_test_stage(self, pipeline: codepipeline.Pipeline, build_output: codepipeline.Artifact, env_params: dict) -> None:
+    def _add_test_stage(self, pipeline: codepipeline.Pipeline, source_output: codepipeline.Artifact, env_params: dict) -> None:
         vpc = ec2.Vpc.from_lookup(self, "Test-VPC", vpc_id="vpc-02fa5b99649483e11")
         security_group = ec2.SecurityGroup(self, "TestSecurityGroup", vpc=vpc)
         security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(8080), "Allow Tomcat traffic")
@@ -126,6 +126,11 @@ class DevopsCicdJavaTomcatStack(Stack):
             sudo amazon-linux-extras enable corretto17
             sudo yum install -y java-17-amazon-corretto tomcat
             sudo systemctl start tomcat
+            # Deploy the WAR file from S3
+            aws s3 cp s3://devopscicdjavatomcatstack-pipelineartifactsbucket2-ops076t0rsuk/${CODEBUILD_ARTIFACT_NAME} /usr/share/tomcat/webapps/ROOT.war
+
+            # Restart Tomcat
+            sudo systemctl restart tomcat
             """
         )
 
@@ -133,24 +138,25 @@ class DevopsCicdJavaTomcatStack(Stack):
         test_project = codebuild.PipelineProject(
             self,
             "TestProject",
-            build_spec=codebuild.BuildSpec.from_object({
-                "version": "0.2",
-                "phases": {
-                    "build": {
-                        "commands": [
-                            "echo Installing dependencies",
-                            "curl -O https://bootstrap.pypa.io/get-pip.py",
-                            "python3 get-pip.py",
-                            "pip install requests",
-                            "echo Running API tests",
-                            "python tests/test_api.py"
-                        ]
-                    }
-                },
-                "artifacts": {
-                    "files": ["**/*"]
-                }
-            }),
+            build_spec=codebuild.BuildSpec.from_source_filename("tests/buildspec.yml")
+            # build_spec=codebuild.BuildSpec.from_object({
+            #     "version": "0.2",
+            #     "phases": {
+            #         "build": {
+            #             "commands": [
+            #                 "echo Installing dependencies",
+            #                 "curl -O https://bootstrap.pypa.io/get-pip.py",
+            #                 "python3 get-pip.py",
+            #                 "pip install requests",
+            #                 "echo Running API tests",
+            #                 "python tests/test_api.py"
+            #             ]
+            #         }
+            #     },
+            #     "artifacts": {
+            #         "files": ["**/*"]
+            #     }
+            # }),
         )
 
         pipeline.add_stage(
@@ -159,7 +165,7 @@ class DevopsCicdJavaTomcatStack(Stack):
                 codepipeline_actions.CodeBuildAction(
                     action_name="Test",
                     project=test_project,
-                    input=build_output,
+                    input=source_output,
                 )
             ]
         )
