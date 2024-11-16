@@ -7,7 +7,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - mvn package  # Assuming you are using Maven to build your WAR file
+      - mvn clean package  # Assuming you are using Maven to build your WAR file
 artifacts:
   files:
     - target/*.war

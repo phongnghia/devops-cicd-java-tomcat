@@ -5,9 +5,6 @@ from aws_cdk import (
     aws_autoscaling as autoscaling,
     aws_elasticloadbalancingv2 as elbv2,
     aws_iam as iam,
-    aws_codebuild as codebuild,
-    aws_codepipeline as codepipeline,
-    aws_codepipeline_actions as cp_actions,
 )
 import yaml
 from constructs import Construct
@@ -34,17 +31,17 @@ class DevopsCicdAppStack(Stack):
         instance_role = iam.Role.from_role_arn(self, "InstanceRole", SecretValue.secrets_manager('instance-ec2-role'))
 
         # Auto Scaling Group
-        # asg = autoscaling.AutoScalingGroup(self, "ASG",
-        #     vpc=vpc,
-        #     instance_type=ec2.InstanceType(env_params['instance_type']),
-        #     machine_image=ami,
-        #     min_capacity=env_params['min_size'],
-        #     max_capacity=env_params['max_size'],
-        #     role=instance_role,
-        #     security_group=security_group
-        # )
+        asg = autoscaling.AutoScalingGroup(self, "ASG",
+            vpc=vpc,
+            instance_type=ec2.InstanceType(env_params['instance_type']),
+            machine_image=ami,
+            min_capacity=env_params['min_size'],
+            max_capacity=env_params['max_size'],
+            role=instance_role,
+            security_group=security_group
+        )
 
-        # # Load Balancer
-        # lb = elbv2.ApplicationLoadBalancer(self, "LB", vpc=vpc, internet_facing=True)
-        # listener = lb.add_listener("Listener", port=80)
-        # listener.add_targets("Target", port=8080, targets=[asg])
+        # Load Balancer
+        lb = elbv2.ApplicationLoadBalancer(self, "LB", vpc=vpc, internet_facing=True)
+        listener = lb.add_listener("Listener", port=80)
+        listener.add_targets("Target", port=8080, targets=[asg])

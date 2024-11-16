@@ -1,6 +1,4 @@
-from ast import arg
 from aws_cdk import (
-    App,
     SecretValue,
     Stack,
     aws_elasticloadbalancingv2 as elbv2,
@@ -39,7 +37,7 @@ class DevopsCicdJavaTomcatStack(Stack):
 
         # Build Stage
         build_project = codebuild.PipelineProject(self, "Build",
-            build_spec=codebuild.BuildSpec.from_source_filename("devops_cicd_java_tomcat/buildspec.yml")
+            build_spec=codebuild.BuildSpec.from_source_filename("java_tomcat_application/buildspec.yml")
         )
 
         pipeline.add_stage(
@@ -58,10 +56,10 @@ class DevopsCicdJavaTomcatStack(Stack):
         # pipeline.add_stage(
         #     stage_name="Deploy",
         #     actions=[
-        #         codepipeline_actions.EcsDeployAction(
+        #         codepipeline_actions.CloudFormationCreateUpdateStackAction(
         #             action_name="Deploy",
-        #             service=arg,
-        #             input=build_output,
+        #             stack_name="DevopsCicdAppStack",
+        #             build_project
         #         )
         #     ]
         # )
