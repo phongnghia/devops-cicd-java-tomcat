@@ -6,7 +6,9 @@ phases:
       java: corretto11
   build:
     commands:
+      - echo "BUILD JAVA TOMCAT APPLICATION"
       - echo Build started on `date`
+      - cd java_tomcat_application
       - mvn clean package  # Assuming you are using Maven to build your WAR file
 artifacts:
   files:
