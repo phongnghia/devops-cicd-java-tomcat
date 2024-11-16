@@ -133,7 +133,22 @@ class DevopsCicdJavaTomcatStack(Stack):
         test_project = codebuild.PipelineProject(
             self,
             "TestProject",
-            build_spec=codebuild.BuildSpec.from_source_filename("tests/buildspec.yml"),
+            build_spec=codebuild.BuildSpec.from_object({
+                "version": "0.2",
+                "phases": {
+                    "build": {
+                        "commands": [
+                            "echo Installing dependencies",
+                            "curl -O https://bootstrap.pypa.io/get-pip.py",
+                            "python3 tests/get-pip.py",
+                            "pip install requests"
+                        ]
+                    }
+                },
+                "artifacts": {
+                    "files": ["**/*"]
+                }
+            }),
         )
 
         pipeline.add_stage(
