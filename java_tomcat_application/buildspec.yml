@@ -13,4 +13,4 @@ phases:
 artifacts:
   files:
     - java_tomcat_application/target/*.war
-  base-directory: 'java_tomcat_application/target'
+  base-directory: 'target'
