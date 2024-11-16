@@ -138,25 +138,31 @@ class DevopsCicdJavaTomcatStack(Stack):
         test_project = codebuild.PipelineProject(
             self,
             "TestProject",
-            build_spec=codebuild.BuildSpec.from_source_filename("tests/buildspec.yml")
-            # build_spec=codebuild.BuildSpec.from_object({
-            #     "version": "0.2",
-            #     "phases": {
-            #         "build": {
-            #             "commands": [
-            #                 "echo Installing dependencies",
-            #                 "curl -O https://bootstrap.pypa.io/get-pip.py",
-            #                 "python3 get-pip.py",
-            #                 "pip install requests",
-            #                 "echo Running API tests",
-            #                 "python tests/test_api.py"
-            #             ]
-            #         }
-            #     },
-            #     "artifacts": {
-            #         "files": ["**/*"]
-            #     }
-            # }),
+            # build_spec=codebuild.BuildSpec.from_source_filename("tests/buildspec.yml")
+            build_spec=codebuild.BuildSpec.from_object({
+                "version": "0.2",
+                "phases": {
+                    "build": {
+                        "commands": [
+                            "echo Installing dependencies",
+                            "curl -O https://bootstrap.pypa.io/get-pip.py",
+                            "python3 get-pip.py",
+                            "pip install requests",
+                            "sudo yum update -y",
+                            "sudo amazon-linux-extras enable corretto17",
+                            "sudo yum install -y java-17-amazon-corretto tomcat",
+                            "sudo systemctl start tomcat",
+                            "aws s3 cp s3://devopscicdjavatomcatstack-pipelineartifactsbucket2-ops076t0rsuk/${CODEBUILD_ARTIFACT_NAME} /usr/share/tomcat/webapps/ROOT.war",
+                            "sudo systemctl restart tomcat",
+                            "echo Running API tests",
+                            "python tests/test_api.py"
+                        ]
+                    }
+                },
+                "artifacts": {
+                    "files": ["**/*"]
+                }
+            }),
         )
 
         pipeline.add_stage(
