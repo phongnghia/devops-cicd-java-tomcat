@@ -10,11 +10,12 @@ phases:
       - sudo apt update -y
       - echo Installing Tomcat 9.0.86
       - sudo apt install tomcat9 -y
-      - sudo mkdir -p /usr/share/tomcat/webapps/
-      - sudo chmod -R 755 /usr/share/tomcat/
-      - sudo chown -R tomcat:tomcat /usr/share/tomcat/
-      - cp java_tomcat_application/target/java-tomcat-application-1.0-SNAPSHOT.war /usr/share/tomcat/webapps/java_tomcat_application.war
-      - sudo /usr/share/tomcat/bin/startup.sh
+      - sudo mkdir -p /var/lib/tomcat9/webapps/
+      - sudo chmod -R 755 /var/lib/tomcat9/webapps/
+      - sudo chown -R tomcat:tomcat /var/lib/tomcat9/webapps/
+      - cp java_tomcat_application/target/java-tomcat-application-1.0-SNAPSHOT.war /var/lib/tomcat9/webapps/java_tomcat_application.war
+      - ls /usr/libexec/tomcat9
+      - sudo /usr/share/tomcat9/bin/startup.sh
   build:
     commands:
       - echo Installing dependencies
