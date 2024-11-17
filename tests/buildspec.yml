@@ -2,14 +2,12 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      java: corretto17
     commands:
       - cd java_tomcat_application
       - mvn clean package; cd ..
       - sudo apt update -y
       - echo Installing Tomcat 9.0.86
-      - sudo apt install tomcat9 -y
+      - sudo apt install tomcat9 openjdk-17-jdk -y
       - sudo mkdir -p /var/lib/tomcat9/webapps/
       - sudo chmod -R 755 /var/lib/tomcat9/webapps/
       - sudo chown -R tomcat:tomcat /var/lib/tomcat9/webapps/
