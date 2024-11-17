@@ -11,11 +11,11 @@ env:
 phases:
   install:
     commands:
+      - sudo apt update -y
       - echo Installing Tomcat 9.0.86
       - sudo apt install tomcat9 openjdk-17-jdk -y
       - cd java_tomcat_application
       - mvn clean package; cd ..
-      - sudo apt update -y
       - sudo mkdir -p /var/lib/tomcat9/webapps/
       - sudo chmod -R 755 /var/lib/tomcat9/webapps/
       - sudo chown -R tomcat:tomcat /var/lib/tomcat9/webapps/
