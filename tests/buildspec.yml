@@ -1,5 +1,13 @@
 version: 0.2
 
+env:
+  variables:
+    JAVA_HOME: "/usr/lib/jvm/java-17-openjdk-amd64"
+    CATALINA_HOME: "/usr/share/tomcat9"
+    CATALINA_BASE: "/var/lib/tomcat9"
+    CATALINA_TMPDI: /tmp
+    JAVA_OPTS: "-Djava.awt.headless=true"
+
 phases:
   install:
     commands:
@@ -15,7 +23,10 @@ phases:
       - cat /lib/systemd/system/tomcat9.service
       - ls /usr/libexec/tomcat9
       - ls /usr/lib/jvm/
-      - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64; export PATH=$JAVA_HOME/bin:$PATH; sudo -E /usr/libexec/tomcat9/tomcat-start.sh
+      - export PATH=$JAVA_HOME/bin:$PATH
+      - sudo -E /usr/libexec/tomcat9/tomcat-update-policy.sh
+      - sudo -E /usr/libexec/tomcat9/tomcat-start.sh
+  
   build:
     commands:
       - echo Installing dependencies
