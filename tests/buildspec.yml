@@ -19,7 +19,7 @@ phases:
       - sudo mkdir -p /var/lib/tomcat9/webapps/
       - sudo chmod -R 755 /var/lib/tomcat9/webapps/
       - sudo chown -R tomcat:tomcat /var/lib/tomcat9/webapps/
-      - cp java_tomcat_application/target/java-tomcat-application-1.0-SNAPSHOT.war /var/lib/tomcat9/webapps/java_tomcat_application.war
+      - cp java_tomcat_application/target/java-tomcat-application-1.0-SNAPSHOT.war /var/lib/tomcat9/webapps/java-tomcat-application.war
       - cat /lib/systemd/system/tomcat9.service
       - ls /usr/libexec/tomcat9
       - ls /usr/lib/jvm/

@@ -33,10 +33,10 @@ class DevopsCicdJavaTomcatStack(Stack):
         self._add_build_stage(pipeline, source_output, build_output)
 
         # Test Stage
-        self._add_test_stage(pipeline, source_output, env_params)
+        self._add_test_stage(pipeline, source_output)
 
         # # Deploy Stage
-        self._add_deploy_stage(pipeline)
+        self._add_deploy_stage(pipeline, env_params)
 
     def _load_parameters(self, environment: str) -> dict:
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -90,7 +90,26 @@ class DevopsCicdJavaTomcatStack(Stack):
             ]
         )
 
-    def _add_test_stage(self, pipeline: codepipeline.Pipeline, source_output: codepipeline.Artifact, env_params: dict) -> None:
+    def _add_test_stage(self, pipeline: codepipeline.Pipeline, source_output: codepipeline.Artifact) -> None:
+        # Test Project
+        test_project = codebuild.PipelineProject(
+            self,
+            "TestProject",
+            build_spec=codebuild.BuildSpec.from_source_filename("tests/buildspec.yml")
+        )
+
+        pipeline.add_stage(
+            stage_name="Test",
+            actions=[
+                codepipeline_actions.CodeBuildAction(
+                    action_name="Test",
+                    project=test_project,
+                    input=source_output,
+                )
+            ]
+        )
+
+    def _add_deploy_stage(self, pipeline: codepipeline.Pipeline, env_params: dict) -> None:
         vpc = ec2.Vpc.from_lookup(self, "Test-VPC", vpc_id="vpc-02fa5b99649483e11")
         security_group = ec2.SecurityGroup(self, "TestSecurityGroup", vpc=vpc)
         security_group.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(8080), "Allow Tomcat traffic")
@@ -125,84 +144,7 @@ class DevopsCicdJavaTomcatStack(Stack):
         lb = elbv2.ApplicationLoadBalancer(self, "LB", vpc=vpc, internet_facing=True)
         listener = lb.add_listener("Listener", port=80)
         listener.add_targets("Target", port=8080, targets=[targets.InstanceTarget(instance)])
-
-        instance.add_user_data(
-            """
-            #!/bin/bash
-            echo "Installing Java 17"
-            sudo apt update -y
-            sudo apt install openjdk-17-jdk -y
-            # echo "Installing Tomcat 9.0.86"
-            # wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.86/bin/apache-tomcat-9.0.86.tar.gz
-            # tar -xvzf apache-tomcat-9.0.86.tar.gz
-            # mv apache-tomcat-9.0.86 /opt/tomcat
-            # echo "Tomcat installed to /opt/tomcat"
-            # groupadd tomcat
-            # useradd -r -s /bin/false -g tomcat tomcat
-            # chown -R tomcat:tomcat /opt/tomcat
-            # cp deploy/tomcat.service /etc/systemd/system/tomcat.service
-            # aws s3 cp s3://devopscicdjavatomcatstack-pipelineartifactsbucket2-ops076t0rsuk/${CODEBUILD_ARTIFACT_NAME} /usr/share/tomcat/webapps/ROOT.war
-            # systemctl daemon-reload
-            # systemctl enable tomcat
-            # systemctl start tomcat
-            """
-        )
-
-        # Test Project
-        test_project = codebuild.PipelineProject(
-            self,
-            "TestProject",
-            build_spec=codebuild.BuildSpec.from_source_filename("tests/buildspec.yml")
-            # build_spec=codebuild.BuildSpec.from_object({
-            #     "version": "0.2",
-            #     "phases": {
-            #         "build": {
-            #             "commands": [
-            #                 "cd java_tomcat_application",
-            #                 "mvn clean package",
-            #                 "echo Installing Java 17",
-            #                 "sudo apt update -y",
-            #                 "sudo apt install openjdk-17-jdk -y",
-            #                 "echo Installing Tomcat 9.0.86",
-            #                 "wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.86/bin/apache-tomcat-9.0.86.tar.gz",
-            #                 "tar -xvzf apache-tomcat-9.0.86.tar.gz",
-            #                 "mv apache-tomcat-9.0.86 /opt/tomcat",
-            #                 "echo Tomcat installed to /opt/tomcat",
-            #                 "groupadd tomcat",
-            #                 "useradd -r -s /bin/false -g tomcat tomcat",
-            #                 "chown -R tomcat:tomcat /opt/tomcat",
-            #                 "cp ../deploy/tomcat.service /etc/systemd/system/tomcat.service",
-            #                 "cp target/*.war /usr/share/tomcat/webapps/java_tomcat_application.war",
-            #                 "systemctl daemon-reload",
-            #                 "systemctl enable tomcat",
-            #                 "systemctl start tomcat",
-            #                 "echo Installing dependencies",
-            #                 "curl -O https://bootstrap.pypa.io/get-pip.py",
-            #                 "python3 get-pip.py",
-            #                 "pip install requests",
-            #                 "echo Running API tests",
-            #                 "python ../tests/test_api.py"
-            #             ]
-            #         }
-            #     },
-            #     "artifacts": {
-            #         "files": ["**/*"]
-            #     }
-            # }),
-        )
-
-        pipeline.add_stage(
-            stage_name="Test",
-            actions=[
-                codepipeline_actions.CodeBuildAction(
-                    action_name="Test",
-                    project=test_project,
-                    input=source_output,
-                )
-            ]
-        )
-
-    def _add_deploy_stage(self, pipeline: codepipeline.Pipeline) -> None:
+        
         pipeline.add_stage(
             stage_name="Deploy",
             actions=[
