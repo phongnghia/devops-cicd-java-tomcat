@@ -9,14 +9,10 @@ phases:
       - mvn clean package; cd ..
       - sudo apt update -y
       - echo Installing Tomcat 9.0.86
-      - wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.86/bin/apache-tomcat-9.0.86.tar.gz
-      - tar -xvzf apache-tomcat-9.0.86.tar.gz
-      - mv apache-tomcat-9.0.86 /opt/tomcat
-      - echo Tomcat installed to /opt/tomcat
-      - groupadd tomcat
-      - useradd -r -s /bin/false -g tomcat tomcat
-      - chown -R tomcat:tomcat /opt/tomcat
-      - cp deploy/tomcat.service /etc/systemd/system/tomcat.service
+      - sudo apt install tomcat9 -y
+      - sudo mkdir -p /usr/share/tomcat/webapps/
+      - sudo chmod -R 755 /usr/share/tomcat/
+      - sudo chown -R tomcat:tomcat /usr/share/tomcat/
       - cp java_tomcat_application/target/java-tomcat-application-1.0-SNAPSHOT.war /usr/share/tomcat/webapps/java_tomcat_application.war
       - systemctl daemon-reload
       - systemctl enable tomcat
