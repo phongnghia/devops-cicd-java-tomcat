@@ -2,8 +2,10 @@ from aws_cdk import (
     SecretValue,
     Stack,
     aws_ec2 as ec2,
+    aws_elasticloadbalancingv2 as elbv2,
     aws_codepipeline as codepipeline,
     aws_codepipeline_actions as codepipeline_actions,
+    aws_elasticloadbalancingv2_targets as targets,
     aws_codebuild as codebuild,
     aws_iam as iam,
 )
@@ -118,6 +120,11 @@ class DevopsCicdJavaTomcatStack(Stack):
             ),
             security_group=security_group,
         )
+
+        # Load Balancer
+        lb = elbv2.ApplicationLoadBalancer(self, "LB", vpc=vpc, internet_facing=True)
+        listener = lb.add_listener("Listener", port=80)
+        listener.add_targets("Target", port=8080, targets=[targets.InstanceTarget(instance)])
 
         instance.add_user_data(
             """
