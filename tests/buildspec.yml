@@ -13,10 +13,9 @@ phases:
       - sudo mkdir -p /usr/share/tomcat/webapps/
       - sudo chmod -R 755 /usr/share/tomcat/
       - sudo chown -R tomcat:tomcat /usr/share/tomcat/
+      - sudo systemctl restart tomcat
       - cp java_tomcat_application/target/java-tomcat-application-1.0-SNAPSHOT.war /usr/share/tomcat/webapps/java_tomcat_application.war
-      - systemctl daemon-reload
-      - systemctl enable tomcat
-      - systemctl start tomcat
+      - sudo /usr/share/tomcat/bin/startup.sh
   build:
     commands:
       - echo Installing dependencies
