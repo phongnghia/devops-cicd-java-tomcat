@@ -17,7 +17,7 @@ phases:
       - useradd -r -s /bin/false -g tomcat tomcat
       - chown -R tomcat:tomcat /opt/tomcat
       - cp deploy/tomcat.service /etc/systemd/system/tomcat.service
-      - cp java_tomcat_application/target/java-tomcat-application-1.0-SNAPSHOT /usr/share/tomcat/webapps/java_tomcat_application.war
+      - cp java_tomcat_application/target/java-tomcat-application-1.0-SNAPSHOT.war /usr/share/tomcat/webapps/java_tomcat_application.war
       - systemctl daemon-reload
       - systemctl enable tomcat
       - systemctl start tomcat
