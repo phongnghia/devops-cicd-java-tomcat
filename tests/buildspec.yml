@@ -1,6 +1,23 @@
-version: "0.2"
+version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      java: corretto17
+    commands:
+      - echo "Installing Tomcat 9.0.86"
+      - wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.86/bin/apache-tomcat-9.0.86.tar.gz
+      - tar -xvzf apache-tomcat-9.0.86.tar.gz
+      - mv apache-tomcat-9.0.86 /opt/tomcat
+      - echo "Tomcat installed to /opt/tomcat"
+      - groupadd tomcat
+      - useradd -r -s /bin/false -g tomcat tomcat
+      - chown -R tomcat:tomcat /opt/tomcat
+      - cp deploy/tomcat.service /etc/systemd/system/tomcat.service
+      - aws s3 cp s3://devopscicdjavatomcatstack-pipelineartifactsbucket2-ops076t0rsuk/${CODEBUILD_ARTIFACT_NAME} /usr/share/tomcat/webapps/ROOT.war
+      - systemctl daemon-reload
+      - systemctl enable tomcat
+      - systemctl start tomcat
   build:
     commands:
       - echo Installing dependencies
