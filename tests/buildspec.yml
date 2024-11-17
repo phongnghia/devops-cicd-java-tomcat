@@ -15,9 +15,7 @@ phases:
       - cat /lib/systemd/system/tomcat9.service
       - ls /usr/libexec/tomcat9
       - ls /usr/lib/jvm/
-      - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-      - export PATH=$JAVA_HOME/bin:$PATH
-      - sudo /usr/libexec/tomcat9/tomcat-start.sh
+      - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64; export PATH=$JAVA_HOME/bin:$PATH; sudo /usr/libexec/tomcat9/tomcat-start.sh
   build:
     commands:
       - echo Installing dependencies
