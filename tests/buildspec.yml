@@ -25,7 +25,8 @@ phases:
       - ls /usr/lib/jvm/
       - export PATH=$JAVA_HOME/bin:$PATH
       - sudo -E /usr/libexec/tomcat9/tomcat-update-policy.sh
-      - sudo -E /usr/libexec/tomcat9/tomcat-start.sh
+      - nohup sudo -E /usr/libexec/tomcat9/tomcat-start.sh > tomcat.log 2>&1 &
+      - cat tomcat.log
   
   build:
     commands:
