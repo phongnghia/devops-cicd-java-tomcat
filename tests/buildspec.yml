@@ -14,8 +14,9 @@ phases:
       - sudo chmod -R 755 /var/lib/tomcat9/webapps/
       - sudo chown -R tomcat:tomcat /var/lib/tomcat9/webapps/
       - cp java_tomcat_application/target/java-tomcat-application-1.0-SNAPSHOT.war /var/lib/tomcat9/webapps/java_tomcat_application.war
+      - cat /lib/systemd/system/tomcat9.service
       - ls /usr/libexec/tomcat9
-      - sudo /usr/share/tomcat9/bin/startup.sh
+      - sudo /usr/libexec/tomcat9/tomcat-start.sh
   build:
     commands:
       - echo Installing dependencies
