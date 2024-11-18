@@ -4,12 +4,12 @@ dev:
   max_size: 2
 
 test:
-  instance_type: t2.small
+  instance_type: t2.micro
   min_size: 2
   max_size: 4
 
 prod:
-  instance_type: t2.medium
+  instance_type: t2.micro
   min_size: 3
   max_size: 6
 

@@ -27,7 +27,7 @@ class DevopsCicdJavaTomcatStack(Stack):
         pipeline = codepipeline.Pipeline(self, "Pipeline")
 
         # Source Stage
-        self._add_source_stage(pipeline, source_output)
+        self._add_source_stage(pipeline, source_output, environment)
 
         # Build Stage
         self._add_build_stage(pipeline, source_output, build_output)
@@ -56,7 +56,7 @@ class DevopsCicdJavaTomcatStack(Stack):
 
         return params[environment]
 
-    def _add_source_stage(self, pipeline: codepipeline.Pipeline, source_output: codepipeline.Artifact) -> None:
+    def _add_source_stage(self, pipeline: codepipeline.Pipeline, source_output: codepipeline.Artifact, environment) -> None:
         pipeline.add_stage(
             stage_name="Source",
             actions=[
@@ -64,7 +64,7 @@ class DevopsCicdJavaTomcatStack(Stack):
                     action_name="GitHub_SourceCode",
                     owner="phongnghia",
                     repo="devops-cicd-java-tomcat",
-                    branch="main",
+                    branch=environment,
                     oauth_token=SecretValue.secrets_manager('github-token'),
                     output=source_output,
                 )
